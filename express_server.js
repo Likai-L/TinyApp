@@ -17,6 +17,11 @@ app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
 });
 
+app.get("/urls", (req, res) => {
+  const templateVars = { urls: urlDatabase }; // send the variables inside an object
+  res.render("urls_index", templateVars); // don't include /views/... or the file extension ".ejs"
+});
+
 app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
