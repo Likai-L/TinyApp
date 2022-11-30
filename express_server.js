@@ -28,14 +28,21 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new");
 });
 
+app.post("/urls/:id/delete", (req, res) => {
+  delete urlDatabase[req.params.id];
+  res.redirect("/urls");
+});
+
+
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
   const shortUrl = generateRandomString();
   urlDatabase[shortUrl] = req.body.longURL;
   console.log(urlDatabase);
-  res.redirect(`urls/${shortUrl}`);
+  res.redirect(`/urls/${shortUrl}`);
 
 });
+
 
 app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id];
