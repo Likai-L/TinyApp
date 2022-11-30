@@ -30,7 +30,21 @@ app.get("/urls/new", (req, res) => {
 
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
-  res.send("Ok"); // Respond with 'Ok' (we will replace this)
+  const shortUrl = generateRandomString();
+  urlDatabase[shortUrl] = req.body.longURL;
+  console.log(urlDatabase);
+  res.redirect(`urls/${shortUrl}`);
+
+});
+
+app.get("/u/:id", (req, res) => {
+  const longURL = urlDatabase[req.params.id];
+  console.log(longURL);
+  if (longURL.startsWith("http://") || longURL.startsWith("https://")) {
+    res.redirect(longURL);
+  } else {
+    res.redirect(`http://${longURL}`);
+  }
 });
 
 app.get("/", (req, res) => {
