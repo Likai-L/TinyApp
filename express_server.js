@@ -43,6 +43,11 @@ app.post("/urls", (req, res) => {
 
 });
 
+app.post("/urls/:id", (req, res) => {
+  urlDatabase[req.params.id] = req.body.newURL;
+  res.redirect("/urls");
+});
+
 
 app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id];
