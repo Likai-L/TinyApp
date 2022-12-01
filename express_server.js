@@ -5,12 +5,7 @@ const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 
 const generateRandomString = () => {
-  const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
-  let randomString = "";
-  for (let i = 0; i <= 6; i++) {
-    randomString += chars[Math.floor(Math.random() * chars.length)];
-  }
-  return randomString;
+  return Math.random().toString(36).substring(3, 9);
 };
 
 
@@ -35,6 +30,7 @@ app.get("/urls/new", (req, res) => {
 
 app.post("/urls/:id/delete", (req, res) => {
   delete urlDatabase[req.params.id];
+  console.log(urlDatabase);
   res.redirect("/urls");
 });
 
