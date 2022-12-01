@@ -45,14 +45,14 @@
         </thead>
         <tbody>
           <% for (let id in urls) { %>
-            <form method="POST" action="/urls/<%= id %>/delete">
-              <tr>
+            <tr>
               <td name="shortURL"><%= id %></td>
               <td><%= urls[id] %></td>
               <td><a href="/urls/<%=id%>"><button type="button" class="edit">Edit</button></a></td>
+              <form method="POST" action="/urls/<%= id %>/delete">
               <td><button type="submit">Delete</button></td>
+              </form>
               </tr>
-            </form>
           <% } %>
         </tbody>
       </table>
