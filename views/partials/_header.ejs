@@ -49,11 +49,11 @@
             <span>Logged in as: <%= username %>!</span>
             <button type="submit" class="login-status-btn">Logout</button>
           </form>
-        </form>
         <% } else { %>
           <form action="/login" method="POST" class="login-status">
             <input type="text" name="username" placeholder="Username">
             <button type="submit" class="login-status-btn">Login</button>
+          </form>
         <% } %>
       </div>
     </div>
