@@ -4,8 +4,8 @@ const PORT = 8080; // default port 8080
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 
-const generateRandomString = () => {
-  return Math.random().toString(36).substring(3, 9);
+const generateRandomString = (numOfChars) => {
+  return Math.random().toString(36).substring(3, numOfChars + 3);
 };
 
 
@@ -14,6 +14,19 @@ app.set("view engine", "ejs");
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
+};
+
+const users = {
+  userRandomID: {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur",
+  },
+  user2RandomID: {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk",
+  },
 };
 
 // middleware(s) before any route
@@ -47,7 +60,7 @@ app.post("/logout", (req, res) => {
 
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
-  const shortUrl = generateRandomString();
+  const shortUrl = generateRandomString(6);
   urlDatabase[shortUrl] = req.body.longURL;
   console.log(urlDatabase);
   res.redirect(`/urls/${shortUrl}`);
@@ -72,6 +85,16 @@ app.get("/u/:id", (req, res) => {
 
 app.get("/register", (req, res) => {
   res.render("register");
+});
+
+app.post("/register", (req, res) => {
+  console.log(req.body);
+  const email = req.body.email;
+  const password = req.body.password;
+  if (!email || !password) {
+    return res.status(401).send("Email/password field can't be empty");
+  }
+
 });
 
 app.get("/urls.json", (req, res) => {
