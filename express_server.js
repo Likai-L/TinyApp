@@ -23,8 +23,14 @@ const lookUpEmail = (email) => {
 app.set("view engine", "ejs");
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW",
+  },
+  i3BoGr: {
+    longURL: "https://www.google.ca",
+    userID: "aJ48lW",
+  },
 };
 
 const users = {};
@@ -57,20 +63,23 @@ app.post("/urls", (req, res) => {
   }
   console.log(req.body); // Log the POST request body to the console
   const shortUrl = generateRandomString(6);
-  urlDatabase[shortUrl] = req.body.longURL;
+  urlDatabase[shortUrl] = {"longURL": req.body.longURL, userID: req.cookies["user_id"] };
   console.log(urlDatabase);
   res.redirect(`/urls/${shortUrl}`);
 
 });
 
 app.post("/urls/:id", (req, res) => {
-  urlDatabase[req.params.id] = req.body.newURL;
+  urlDatabase[req.params.id].longURL = req.body.newURL;
   res.redirect("/urls");
 });
 
 
 app.get("/u/:id", (req, res) => {
-  const longURL = urlDatabase[req.params.id];
+  if (!urlDatabase[req.params.id]) {
+    return res.status(404).send("Invalid short URL.");
+  }
+  const longURL = urlDatabase[req.params.id].longURL;
   console.log(longURL);
   if (longURL.startsWith("http://") || longURL.startsWith("https://")) {
     res.redirect(longURL);
@@ -155,13 +164,8 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/:id", (req, res) => {
-  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id], user: users[req.cookies["user_id"]] };
+  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id].longURL, user: users[req.cookies["user_id"]] };
   res.render("urls_show", templateVars);
-});
-
-
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
 app.get("*", (req, res) => {
