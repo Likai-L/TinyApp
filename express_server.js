@@ -4,8 +4,19 @@ const PORT = 8080; // default port 8080
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
 
+// helper function 1: generate a random ID
 const generateRandomString = (numOfChars) => {
   return Math.random().toString(36).substring(3, numOfChars + 3);
+};
+
+// helper function 2: look up an email in users
+const lookUpEmail = (email) => {
+  for (let user in users) {
+    if (users[user].email === email) {
+      return users[user];
+    }
+  }
+  return null;
 };
 
 
@@ -79,9 +90,16 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  // sad path: no email or password
   if (!email || !password) {
-    return res.status(401).send("Email/password field can't be empty");
+    return res.status(400).send("Email/password field can't be empty");
   }
+
+  // sad path: email already resgistered
+  if (lookUpEmail(email)) {
+    return res.status(400).send("Email already registered, please use a different one.");
+  }
+
   const randomId = generateRandomString(6);
   users[randomId] = {
     id: randomId,
