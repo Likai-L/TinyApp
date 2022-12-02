@@ -70,8 +70,8 @@ app.get("/u/:id", (req, res) => {
   }
 });
 
-app.get("/", (req, res) => {
-  res.send("Hello!");
+app.get("/register", (req, res) => {
+  res.render("register");
 });
 
 app.get("/urls.json", (req, res) => {
