@@ -16,18 +16,7 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-const users = {
-  userRandomID: {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: "purple-monkey-dinosaur",
-  },
-  user2RandomID: {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: "dishwasher-funk",
-  },
-};
+const users = {};
 
 // middleware(s) before any route
 app.use(morgan('dev'));
@@ -88,13 +77,20 @@ app.get("/register", (req, res) => {
 });
 
 app.post("/register", (req, res) => {
-  console.log(req.body);
   const email = req.body.email;
   const password = req.body.password;
   if (!email || !password) {
     return res.status(401).send("Email/password field can't be empty");
   }
-
+  const randomId = generateRandomString(6);
+  users[randomId] = {
+    id: randomId,
+    email: email,
+    password: password
+  };
+  console.log(users);
+  res.cookie("user_id", randomId);
+  res.redirect("/urls");
 });
 
 app.get("/urls.json", (req, res) => {
