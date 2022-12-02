@@ -19,6 +19,16 @@ const lookUpEmail = (email) => {
   return null;
 };
 
+// helper function 3: filter urlDatabse based on userID
+const urlsForUser = (id) => {
+  const urls = {};
+  for (let url in urlDatabase) {
+    if (urlDatabase[url].userID === id) {
+      urls[url] = urlDatabase[url];
+    }
+  }
+  return urls;
+};
 
 app.set("view engine", "ejs");
 
@@ -33,7 +43,7 @@ const urlDatabase = {
   },
 };
 
-const users = {};
+const users = {}; // known bug: if the server restarts without the user logging out, users will be empty but the cookie remains, so it's logged in but header can't find user in users
 
 // middleware(s) before any route
 app.use(morgan('dev'));
@@ -77,7 +87,7 @@ app.post("/urls/:id", (req, res) => {
 
 app.get("/u/:id", (req, res) => {
   if (!urlDatabase[req.params.id]) {
-    return res.status(404).send("Invalid short URL.");
+    return res.status(404).send("This URL doesn't exist.");
   }
   const longURL = urlDatabase[req.params.id].longURL;
   console.log(longURL);
@@ -125,6 +135,7 @@ app.get("/login", (req, res) => {
     return res.redirect("/urls");
   }
   const templateVars = { user: users[req.cookies["user_id"]] };
+  console.log(templateVars.user);
   res.render("login", templateVars);
 });
 
@@ -159,11 +170,17 @@ app.get("/urls.json", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, user: users[req.cookies["user_id"]] }; // send the variables inside an object
+  if (!req.cookies["user_id"]) {
+    return res.status(401).send("You need to login to view shortened URLs.");
+  }
+  const templateVars = { urls: urlsForUser(req.cookies["user_id"]), user: users[req.cookies["user_id"]] }; // send the variables inside an object
   res.render("urls_index", templateVars); // don't include /views/... or the file extension ".ejs"
 });
 
 app.get("/urls/:id", (req, res) => {
+  if (!urlDatabase[req.params.id]) {
+    return res.status(404).send("This URL doesn't exist.");
+  }
   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id].longURL, user: users[req.cookies["user_id"]] };
   res.render("urls_show", templateVars);
 });
