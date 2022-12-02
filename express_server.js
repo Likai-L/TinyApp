@@ -61,6 +61,15 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("/urls/:id/delete", (req, res) => {
+  if (!urlDatabase[req.params.id]) {
+    return res.status(404).send("URL doesn't exist.");
+  }
+  if (!req.cookies["user_id"]) {
+    return res.status(401).send("You need to log in to delete URLs.");
+  }
+  if (req.cookies["user_id"] !== urlDatabase[req.params.id].userID) {
+    return res.status(401).send("You cannot delete a URL that doesn't belong to you.");
+  }
   delete urlDatabase[req.params.id];
   console.log(urlDatabase);
   res.redirect("/urls");
@@ -80,6 +89,15 @@ app.post("/urls", (req, res) => {
 });
 
 app.post("/urls/:id", (req, res) => {
+  if (!urlDatabase[req.params.id]) {
+    return res.status(404).send("URL doesn't exist.");
+  }
+  if (!req.cookies["user_id"]) {
+    return res.status(401).send("You need to log in to edit URLs.");
+  }
+  if (req.cookies["user_id"] !== urlDatabase[req.params.id].userID) {
+    return res.status(401).send("You cannot edit a URL that doesn't belong to you.");
+  }
   urlDatabase[req.params.id].longURL = req.body.newURL;
   res.redirect("/urls");
 });
@@ -180,6 +198,12 @@ app.get("/urls", (req, res) => {
 app.get("/urls/:id", (req, res) => {
   if (!urlDatabase[req.params.id]) {
     return res.status(404).send("This URL doesn't exist.");
+  }
+  if (!req.cookies["user_id"]) {
+    return res.status(401).send("You need to log in to view this page.");
+  }
+  if (req.cookies["user_id"] !== urlDatabase[req.params.id].userID) {
+    return res.status(401).send("You cannot view a URL that doesn't belong to you.");
   }
   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id].longURL, user: users[req.cookies["user_id"]] };
   res.render("urls_show", templateVars);
