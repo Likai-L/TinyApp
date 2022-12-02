@@ -50,10 +50,14 @@
             <button type="submit" class="login-status-btn">Logout</button>
           </form>
         <% } else { %>
-          <form action="/login" method="POST" class="login-status">
-            <input type="text" name="username" placeholder="Username">
-            <button type="submit" class="login-status-btn">Login</button>
-          </form>
+          <span class="login-status">
+            <a href="/login">
+              <button type="button" class="login-status-btn">Login</button>
+            </a>
+            <a href="/register">
+              <button type="button" class="login-status-btn">Register</button>
+            </a>
+          </span>
         <% } %>
       </div>
     </div>
