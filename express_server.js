@@ -47,16 +47,6 @@ app.post("/urls/:id/delete", (req, res) => {
   res.redirect("/urls");
 });
 
-app.post("/login", (req, res) => {
-  res.cookie("username", req.body.username);
-  res.redirect("/urls");
-});
-
-app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
-  res.redirect("/urls");
-});
-
 
 app.post("/urls", (req, res) => {
   console.log(req.body); // Log the POST request body to the console
@@ -92,7 +82,7 @@ app.post("/register", (req, res) => {
   const password = req.body.password;
   // sad path: no email or password
   if (!email || !password) {
-    return res.status(400).send("Email/password field can't be empty");
+    return res.status(400).send("Email/password cannot be empty");
   }
 
   // sad path: email already resgistered
@@ -113,8 +103,33 @@ app.post("/register", (req, res) => {
 
 app.get("/login", (req, res) => {
   res.render("login");
-}
-);
+});
+
+app.post("/login", (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+  // sad path 1: empty email or password
+  if (!email || !password) {
+    return res.status(400).send("Email/password cannot be empty");
+  }
+  // sad path 2: email doesn't exist
+  if (!lookUpEmail(email)) {
+    return res.status(403).send("Email doesn't exist.");
+  }
+  // sad path 3: email and password doesn't match
+  if (lookUpEmail(email).password !== password) {
+    return res.status(403).send("Invalid password.");
+  }
+  // happy path
+  res.cookie("user_id", lookUpEmail(email).id);
+  res.redirect("/urls");
+
+});
+
+app.post("/logout", (req, res) => {
+  res.clearCookie("user_id");
+  res.redirect("/urls");
+});
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
