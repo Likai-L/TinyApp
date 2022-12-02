@@ -35,6 +35,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 app.get("/urls/new", (req, res) => {
+  if (!req.cookies["user_id"]) {
+    return res.redirect("/login");
+  }
   const templateVars = {
     user: users[req.cookies["user_id"]]
   };
@@ -49,6 +52,9 @@ app.post("/urls/:id/delete", (req, res) => {
 
 
 app.post("/urls", (req, res) => {
+  if (!req.cookies["user_id"]) {
+    return res.status(401).send("You need to login to create shortened URLs.");
+  }
   console.log(req.body); // Log the POST request body to the console
   const shortUrl = generateRandomString(6);
   urlDatabase[shortUrl] = req.body.longURL;
