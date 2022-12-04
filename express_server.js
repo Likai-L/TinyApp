@@ -24,6 +24,7 @@ const users = {}; // known bug: if the server restarts without the user logging 
 // middleware(s) before any route
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
+app.use(express.static('public'));
 app.use(cookieSession({
   name: "session",
   keys: ["spookyKey"]
@@ -41,13 +42,25 @@ app.get("/urls/new", (req, res) => {
 
 app.post("/urls/:id/delete", (req, res) => {
   if (!urlDatabase[req.params.id]) {
-    return res.status(404).send("URL doesn't exist.");
+    const templateVars = {
+      user: users[req.session.userId],
+      message: "This URL doesn't exist."
+    };
+    return res.status(404).render("error", templateVars);
   }
   if (!req.session.userId) {
-    return res.status(401).send("You need to log in to delete URLs.");
+    const templateVars = {
+      user: users[req.session.userId],
+      message: "You need to login to delete URLs."
+    };
+    return res.status(401).render("error", templateVars);
   }
   if (req.session.userId !== urlDatabase[req.params.id].userID) {
-    return res.status(401).send("You cannot delete a URL that doesn't belong to you.");
+    const templateVars = {
+      user: users[req.session.userId],
+      message: "You cannot delete a URL that doesn't belong to you."
+    };
+    return res.status(401).render("error", templateVars);
   }
   delete urlDatabase[req.params.id];
   console.log(urlDatabase);
@@ -57,7 +70,11 @@ app.post("/urls/:id/delete", (req, res) => {
 
 app.post("/urls", (req, res) => {
   if (!req.session.userId) {
-    return res.status(401).send("You need to login to create shortened URLs.");
+    const templateVars = {
+      user: users[req.session.userId],
+      message: "You need to login to create new URLs."
+    };
+    return res.status(401).render("error", templateVars);
   }
   console.log(req.body); // Log the POST request body to the console
   const shortUrl = generateRandomString(6);
@@ -69,13 +86,25 @@ app.post("/urls", (req, res) => {
 
 app.post("/urls/:id", (req, res) => {
   if (!urlDatabase[req.params.id]) {
-    return res.status(404).send("URL doesn't exist.");
+    const templateVars = {
+      user: users[req.session.userId],
+      message: "This URL doesn't exist."
+    };
+    return res.status(404).render("error", templateVars);
   }
   if (!req.session.userId) {
-    return res.status(401).send("You need to log in to edit URLs.");
+    const templateVars = {
+      user: users[req.session.userId],
+      message: "You need to login to edit URLs."
+    };
+    return res.status(401).render("error", templateVars);
   }
   if (req.session.userId !== urlDatabase[req.params.id].userID) {
-    return res.status(401).send("You cannot edit a URL that doesn't belong to you.");
+    const templateVars = {
+      user: users[req.session.userId],
+      message: "You cannot edit a URL that doesn't belong to you."
+    };
+    return res.status(401).render("error", templateVars);
   }
   urlDatabase[req.params.id].longURL = req.body.newURL;
   res.redirect("/urls");
@@ -84,7 +113,11 @@ app.post("/urls/:id", (req, res) => {
 
 app.get("/u/:id", (req, res) => {
   if (!urlDatabase[req.params.id]) {
-    return res.status(404).send("This URL doesn't exist.");
+    const templateVars = {
+      user: users[req.session.userId],
+      message: "This URL doesn't exist."
+    };
+    return res.status(404).render("error", templateVars);
   }
   const longURL = urlDatabase[req.params.id].longURL;
   console.log(longURL);
@@ -109,11 +142,19 @@ app.post("/register", (req, res) => {
   const hashedPassword = bcrypt.hashSync(password, 10);
   // sad path: no email or password
   if (!email || !password) {
-    return res.status(400).send("Email/password cannot be empty");
+    const templateVars = {
+      user: users[req.session.userId],
+      message: "Email/password cannot be empty."
+    };
+    return res.status(400).render("error", templateVars);
   }
   // sad path: email already resgistered
   if (getUserByEmail(email, users)) {
-    return res.status(400).send("Email already registered, please use a different one.");
+    const templateVars = {
+      user: users[req.session.userId],
+      message: "Email already registered. Please use another one."
+    };
+    return res.status(400).render("error", templateVars);
   }
 
   const randomId = generateRandomString(6);
@@ -140,15 +181,27 @@ app.post("/login", (req, res) => {
   const password = req.body.password;
   // sad path 1: empty email or password
   if (!email || !password) {
-    return res.status(400).send("Email/password cannot be empty");
+    const templateVars = {
+      user: users[req.session.userId],
+      message: "Email/password cannot be empty."
+    };
+    return res.status(400).render("error", templateVars);
   }
   // sad path 2: email doesn't exist
   if (!getUserByEmail(email, users)) {
-    return res.status(403).send("Email doesn't exist.");
+    const templateVars = {
+      user: users[req.session.userId],
+      message: "Email doesn't exist."
+    };
+    return res.status(403).render("error", templateVars);
   }
   // sad path 3: email and password doesn't match
   if (!bcrypt.compareSync(password, getUserByEmail(email, users).hashedPassword)) {
-    return res.status(403).send("Incorrect password.");
+    const templateVars = {
+      user: users[req.session.userId],
+      message: "Incorrect password."
+    };
+    return res.status(403).render("error", templateVars);
   }
   // happy path
   req.session.userId = getUserByEmail(email, users).id;
@@ -167,7 +220,11 @@ app.get("/urls.json", (req, res) => {
 
 app.get("/urls", (req, res) => {
   if (!req.session.userId) {
-    return res.status(401).send("You need to login to view shortened URLs.");
+    const templateVars = {
+      user: users[req.session.userId],
+      message: "You need to login to view URLs."
+    };
+    return res.status(401).render("error", templateVars);
   }
   const templateVars = { urls: urlsForUser(req.session.userId, urlDatabase), user: users[req.session.userId] }; // send the variables inside an object
   res.render("urls_index", templateVars); // don't include /views/... or the file extension ".ejs"
@@ -175,13 +232,25 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   if (!urlDatabase[req.params.id]) {
-    return res.status(404).send("This URL doesn't exist.");
+    const templateVars = {
+      user: users[req.session.userId],
+      message: "This URL doesn't exist."
+    };
+    return res.status(404).render("error", templateVars);
   }
   if (!req.session.userId) {
-    return res.status(401).send("You need to log in to view this page.");
+    const templateVars = {
+      user: users[req.session.userId],
+      message: "You need to login to view this URL."
+    };
+    return res.status(401).render("error", templateVars);
   }
   if (req.session.userId !== urlDatabase[req.params.id].userID) {
-    return res.status(401).send("You cannot view a URL that doesn't belong to you.");
+    const templateVars = {
+      user: users[req.session.userId],
+      message: "You cannot view a URL that doesn't belong to you."
+    };
+    return res.status(401).render("error", templateVars);
   }
   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id].longURL, user: users[req.session.userId] };
   res.render("urls_show", templateVars);
@@ -195,7 +264,11 @@ app.get("/", (req, res) => {
 });
 
 app.get("*", (req, res) => {
-  res.send("Oops, this page doesn't exist.");
+  const templateVars = {
+    user: users[req.session.userId],
+    message: "Oops, this page doesn't exist."
+  };
+  return res.status(404).render("error", templateVars);
 });
 
 app.listen(PORT, () => {
