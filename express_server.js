@@ -3,6 +3,7 @@ const app = express();
 const PORT = 8080; // default port 8080
 const morgan = require('morgan');
 const cookieParser = require('cookie-parser');
+const bcrypt = require("bcryptjs");
 
 // helper function 1: generate a random ID
 const generateRandomString = (numOfChars) => {
@@ -127,6 +128,7 @@ app.get("/register", (req, res) => {
 app.post("/register", (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
+  const hashedPassword = bcrypt.hashSync(password, 10);
   // sad path: no email or password
   if (!email || !password) {
     return res.status(400).send("Email/password cannot be empty");
@@ -141,7 +143,7 @@ app.post("/register", (req, res) => {
   users[randomId] = {
     id: randomId,
     email: email,
-    password: password
+    hashedPassword: hashedPassword
   };
   console.log(users);
   res.cookie("user_id", randomId);
@@ -169,8 +171,8 @@ app.post("/login", (req, res) => {
     return res.status(403).send("Email doesn't exist.");
   }
   // sad path 3: email and password doesn't match
-  if (lookUpEmail(email).password !== password) {
-    return res.status(403).send("Invalid password.");
+  if (!bcrypt.compareSync(password, lookUpEmail(email).hashedPassword)) {
+    return res.status(403).send("Incorrect password.");
   }
   // happy path
   res.cookie("user_id", lookUpEmail(email).id);
