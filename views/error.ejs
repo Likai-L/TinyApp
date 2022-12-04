@@ -16,12 +16,43 @@
     />
 
     <title>Error - TinyApp</title>
+    <style>
+      .errorDiv {
+        width: 1000px;
+        height: 300px;
+        margin: 150px auto;
+        position: relative;
+        border: 5px dotted rgb(13, 14, 14);
+        border-radius: 30px;
+        background-color: rgb(231, 170, 157);
+      }
+      .errorImg {
+        position: absolute;
+        top: 30px;
+        right: 65%;
+      }
+      .errorMsg {
+        width: 600px;
+        height: 100;
+        position: absolute;
+        top: 40%;
+        right: 80px;
+        font-size: 30px;
+        font-family:Verdana, Geneva, Tahoma, sans-serif;
+        text-align: center;
+      }
+    </style>
   </head>
 
   <body>
     <%- include('partials/_header') %>
     <main style="margin: 1em;">
-      
+      <div class="errorDiv">
+        <img src="/cat.PNG" alt="<%= message %>" class="errorImg">
+        <div class="errorMsg">
+          <p><%= message %></p>
+        </div>
+      </div>
     </main>
     <!-- Bootstrap JS -->
     <script
