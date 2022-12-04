@@ -4,7 +4,7 @@ const generateRandomString = (numOfChars) => {
 };
 
 // helper function 2: look up an email in users
-const lookUpEmail = (email, database) => {
+const getUserByEmail = (email, database) => {
   for (let user in database) {
     if (database[user].email === email) {
       return database[user];
@@ -24,4 +24,4 @@ const urlsForUser = (id, database) => {
   return urls;
 };
 
-module.exports = { generateRandomString, lookUpEmail, urlsForUser };
+module.exports = { generateRandomString, getUserByEmail, urlsForUser };

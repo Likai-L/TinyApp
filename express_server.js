@@ -4,7 +4,7 @@ const PORT = 8080; // default port 8080
 const morgan = require('morgan');
 const cookieSession = require("cookie-session");
 const bcrypt = require("bcryptjs");
-const { generateRandomString, lookUpEmail, urlsForUser } = require("./helpers");
+const { generateRandomString, getUserByEmail, urlsForUser } = require("./helpers");
 
 app.set("view engine", "ejs");
 
@@ -113,7 +113,7 @@ app.post("/register", (req, res) => {
   }
 
   // sad path: email already resgistered
-  if (lookUpEmail(email, users)) {
+  if (getUserByEmail(email, users)) {
     return res.status(400).send("Email already registered, please use a different one.");
   }
 
@@ -144,15 +144,15 @@ app.post("/login", (req, res) => {
     return res.status(400).send("Email/password cannot be empty");
   }
   // sad path 2: email doesn't exist
-  if (!lookUpEmail(email, users)) {
+  if (!getUserByEmail(email, users)) {
     return res.status(403).send("Email doesn't exist.");
   }
   // sad path 3: email and password doesn't match
-  if (!bcrypt.compareSync(password, lookUpEmail(email, users).hashedPassword)) {
+  if (!bcrypt.compareSync(password, getUserByEmail(email, users).hashedPassword)) {
     return res.status(403).send("Incorrect password.");
   }
   // happy path
-  req.session.userId = lookUpEmail(email, users).id;
+  req.session.userId = getUserByEmail(email, users).id;
   res.redirect("/urls");
 
 });
