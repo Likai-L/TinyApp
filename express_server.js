@@ -4,32 +4,7 @@ const PORT = 8080; // default port 8080
 const morgan = require('morgan');
 const cookieSession = require("cookie-session");
 const bcrypt = require("bcryptjs");
-
-// helper function 1: generate a random ID
-const generateRandomString = (numOfChars) => {
-  return Math.random().toString(36).substring(3, numOfChars + 3);
-};
-
-// helper function 2: look up an email in users
-const lookUpEmail = (email) => {
-  for (let user in users) {
-    if (users[user].email === email) {
-      return users[user];
-    }
-  }
-  return null;
-};
-
-// helper function 3: filter urlDatabse based on userID
-const urlsForUser = (id) => {
-  const urls = {};
-  for (let url in urlDatabase) {
-    if (urlDatabase[url].userID === id) {
-      urls[url] = urlDatabase[url];
-    }
-  }
-  return urls;
-};
+const { generateRandomString, lookUpEmail, urlsForUser } = require("./helpers");
 
 app.set("view engine", "ejs");
 
@@ -44,7 +19,7 @@ const urlDatabase = {
   },
 };
 
-const users = {}; // known bug: if the server restarts without the user logging out, users will be empty but the cookie remains, so it's logged in but header can't find user in users
+const users = {}; // known bug: if the server restarts without the user logging out, users will be empty but the cookies remain, so it's logged in but header can't find user in users
 
 // middleware(s) before any route
 app.use(morgan('dev'));
@@ -138,7 +113,7 @@ app.post("/register", (req, res) => {
   }
 
   // sad path: email already resgistered
-  if (lookUpEmail(email)) {
+  if (lookUpEmail(email, users)) {
     return res.status(400).send("Email already registered, please use a different one.");
   }
 
@@ -169,15 +144,15 @@ app.post("/login", (req, res) => {
     return res.status(400).send("Email/password cannot be empty");
   }
   // sad path 2: email doesn't exist
-  if (!lookUpEmail(email)) {
+  if (!lookUpEmail(email, users)) {
     return res.status(403).send("Email doesn't exist.");
   }
   // sad path 3: email and password doesn't match
-  if (!bcrypt.compareSync(password, lookUpEmail(email).hashedPassword)) {
+  if (!bcrypt.compareSync(password, lookUpEmail(email, users).hashedPassword)) {
     return res.status(403).send("Incorrect password.");
   }
   // happy path
-  req.session.userId = lookUpEmail(email).id;
+  req.session.userId = lookUpEmail(email, users).id;
   res.redirect("/urls");
 
 });
@@ -195,7 +170,7 @@ app.get("/urls", (req, res) => {
   if (!req.session.userId) {
     return res.status(401).send("You need to login to view shortened URLs.");
   }
-  const templateVars = { urls: urlsForUser(req.session.userId), user: users[req.session.userId] }; // send the variables inside an object
+  const templateVars = { urls: urlsForUser(req.session.userId, urlDatabase), user: users[req.session.userId] }; // send the variables inside an object
   res.render("urls_index", templateVars); // don't include /views/... or the file extension ".ejs"
 });
 
