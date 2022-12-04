@@ -111,7 +111,6 @@ app.post("/register", (req, res) => {
   if (!email || !password) {
     return res.status(400).send("Email/password cannot be empty");
   }
-
   // sad path: email already resgistered
   if (getUserByEmail(email, users)) {
     return res.status(400).send("Email already registered, please use a different one.");
@@ -186,6 +185,13 @@ app.get("/urls/:id", (req, res) => {
   }
   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id].longURL, user: users[req.session.userId] };
   res.render("urls_show", templateVars);
+});
+
+app.get("/", (req, res) => {
+  if (req.session.userId) {
+    return res.redirect("/urls");
+  }
+  res.redirect("/login");
 });
 
 app.get("*", (req, res) => {
