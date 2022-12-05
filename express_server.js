@@ -7,22 +7,12 @@ const bcrypt = require("bcryptjs");
 const methodOverride = require("method-override");
 const { generateRandomString, getUserByEmail, urlsForUser } = require("./helpers");
 
-app.set("view engine", "ejs");
-
-const urlDatabase = {
-  b6UTxQ: {
-    longURL: "https://www.tsn.ca",
-    userID: "aJ48lW",
-  },
-  i3BoGr: {
-    longURL: "https://www.google.ca",
-    userID: "aJ48lW",
-  },
-};
+const urlDatabase = {}; // since URLs are associated with users, default URLs cannot be accessed by any user, so we might as well not set any
 
 const users = {}; // known bug: if the server restarts without the user logging out, users will be empty but the cookies remain, so it's logged in but header can't find user in users
 
 // middleware(s) before any route
+app.set("view engine", "ejs");
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
@@ -32,6 +22,7 @@ app.use(cookieSession({
   keys: ["spookyKey"]
 }));
 
+// put this before get /urls/:id so "new" isn't identified as a parameter
 app.get("/urls/new", (req, res) => {
   if (!req.session.userId) {
     return res.redirect("/login");
@@ -42,7 +33,7 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
 });
 
-app.delete("/urls/:id", (req, res) => {
+app.get("/urls/:id", (req, res) => {
   if (!urlDatabase[req.params.id]) {
     const templateVars = {
       user: users[req.session.userId],
@@ -53,37 +44,19 @@ app.delete("/urls/:id", (req, res) => {
   if (!req.session.userId) {
     const templateVars = {
       user: users[req.session.userId],
-      message: "You need to login to delete URLs."
+      message: "You need to login to view this URL."
     };
     return res.status(401).render("error", templateVars);
   }
   if (req.session.userId !== urlDatabase[req.params.id].userID) {
     const templateVars = {
       user: users[req.session.userId],
-      message: "You cannot delete a URL that doesn't belong to you."
+      message: "You cannot view a URL that doesn't belong to you."
     };
     return res.status(401).render("error", templateVars);
   }
-  delete urlDatabase[req.params.id];
-  console.log(urlDatabase);
-  res.redirect("/urls");
-});
-
-
-app.post("/urls", (req, res) => {
-  if (!req.session.userId) {
-    const templateVars = {
-      user: users[req.session.userId],
-      message: "You need to login to create new URLs."
-    };
-    return res.status(401).render("error", templateVars);
-  }
-  console.log(req.body); // Log the POST request body to the console
-  const shortUrl = generateRandomString(6);
-  urlDatabase[shortUrl] = {"longURL": req.body.longURL, userID: req.session.userId };
-  console.log(urlDatabase);
-  res.redirect(`/urls/${shortUrl}`);
-
+  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id].longURL, user: users[req.session.userId] };
+  res.render("urls_show", templateVars);
 });
 
 app.put("/urls/:id", (req, res) => {
@@ -112,6 +85,32 @@ app.put("/urls/:id", (req, res) => {
   res.redirect("/urls");
 });
 
+app.delete("/urls/:id", (req, res) => {
+  if (!urlDatabase[req.params.id]) {
+    const templateVars = {
+      user: users[req.session.userId],
+      message: "This URL doesn't exist."
+    };
+    return res.status(404).render("error", templateVars);
+  }
+  if (!req.session.userId) {
+    const templateVars = {
+      user: users[req.session.userId],
+      message: "You need to login to delete URLs."
+    };
+    return res.status(401).render("error", templateVars);
+  }
+  if (req.session.userId !== urlDatabase[req.params.id].userID) {
+    const templateVars = {
+      user: users[req.session.userId],
+      message: "You cannot delete a URL that doesn't belong to you."
+    };
+    return res.status(401).render("error", templateVars);
+  }
+  delete urlDatabase[req.params.id];
+  console.log(urlDatabase);
+  res.redirect("/urls");
+});
 
 app.get("/u/:id", (req, res) => {
   if (!urlDatabase[req.params.id]) {
@@ -228,30 +227,19 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars); // don't include /views/... or the file extension ".ejs"
 });
 
-app.get("/urls/:id", (req, res) => {
-  if (!urlDatabase[req.params.id]) {
-    const templateVars = {
-      user: users[req.session.userId],
-      message: "This URL doesn't exist."
-    };
-    return res.status(404).render("error", templateVars);
-  }
+app.post("/urls", (req, res) => {
   if (!req.session.userId) {
     const templateVars = {
       user: users[req.session.userId],
-      message: "You need to login to view this URL."
+      message: "You need to login to create new URLs."
     };
     return res.status(401).render("error", templateVars);
   }
-  if (req.session.userId !== urlDatabase[req.params.id].userID) {
-    const templateVars = {
-      user: users[req.session.userId],
-      message: "You cannot view a URL that doesn't belong to you."
-    };
-    return res.status(401).render("error", templateVars);
-  }
-  const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id].longURL, user: users[req.session.userId] };
-  res.render("urls_show", templateVars);
+  console.log(req.body); // Log the POST request body to the console
+  const shortUrl = generateRandomString(6);
+  urlDatabase[shortUrl] = {"longURL": req.body.longURL, userID: req.session.userId };
+  console.log(urlDatabase);
+  res.redirect(`/urls/${shortUrl}`);
 });
 
 app.get("/", (req, res) => {
