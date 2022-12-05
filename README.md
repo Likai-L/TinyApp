@@ -7,23 +7,23 @@ TinyApp is a full stack web application built with Node and Express that allows 
 <br>
 
 !["The login page. Say hi to our welcome kitten!"](https://github.com/Likai-L/tinyapp/blob/main/docs/login-page.png?raw=true)
-<center>The login page. Say hi to our welcome kitten!</center>
+<p align="center">The login page. Say hi to our welcome kitten!</p>
 <br>
 
 !["The main index page containing all the URLs that you created."](https://github.com/Likai-L/tinyapp/blob/main/docs/urls-page.png?raw=true)
-<center>The main index page containing all the URLs that you created.</center>
+<p align="center">The main index page containing all the URLs that you created.</p>
 <br>
 
 !["The page for creating new URLs."](https://github.com/Likai-L/tinyapp/blob/main/docs/create-page.png?raw=true)
-<center>The page for creating new URLs.</center>
+<p align="center">The page for creating new URLs.</p>
 <br>
 
 !["The page for editting existing URLs."](https://github.com/Likai-L/tinyapp/blob/main/docs/edit-page.png?raw=true)
-<center>The page for editting existing URLs.</center>
+<p align="center">The page for editting existing URLs.</p>
 <br>
 
 !["One of the error pages. Our error kitten is confused!"](https://github.com/Likai-L/tinyapp/blob/main/docs/404-page.png?raw=true)
-<center>One of the error pages. Our error kitten is confused!</center>
+<p align="center">One of the error pages. Our error kitten is confused!</p>
 <br>
 
 ## Dependencies
