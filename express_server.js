@@ -7,9 +7,15 @@ const bcrypt = require("bcryptjs");
 const methodOverride = require("method-override");
 const { generateRandomString, getUserByEmail, urlsForUser } = require("./helpers");
 
-const urlDatabase = {}; // since URLs are associated with users, default URLs cannot be accessed by any user, so we might as well not set any
+const urlDatabase = {};
 
-const users = {}; // known bug: if the server restarts without the user logging out, users will be empty but the cookies remain, so it's logged in but header can't find user in users
+const users = {};
+// known bug: if the server restarts without the user logging out,
+// the users database will be emptied but the cookies remain in the browser,
+// so the user is logged in with old data, routes deem it logged in since cookies are present,
+// the header deems it not logged in since the old user data is gone and the user object it receives is undefined.
+// result: no logout button is shown so users cannot logout unless manually clearing cookies,
+// if new urls are created in this state, their owners will be old users that can't be found in the users database
 
 // middleware(s) before any route
 app.set("view engine", "ejs");
@@ -234,6 +240,7 @@ app.post("/urls", (req, res) => {
   }
   const shortUrl = generateRandomString(6);
   urlDatabase[shortUrl] = {"longURL": req.body.longURL, userID: req.session.userId };
+  console.log(users, urlDatabase);
   res.redirect(`/urls/${shortUrl}`);
 });
 
