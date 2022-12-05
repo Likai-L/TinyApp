@@ -108,7 +108,6 @@ app.delete("/urls/:id", (req, res) => {
     return res.status(401).render("error", templateVars);
   }
   delete urlDatabase[req.params.id];
-  console.log(urlDatabase);
   res.redirect("/urls");
 });
 
@@ -121,7 +120,6 @@ app.get("/u/:id", (req, res) => {
     return res.status(404).render("error", templateVars);
   }
   const longURL = urlDatabase[req.params.id].longURL;
-  console.log(longURL);
   if (longURL.startsWith("http://") || longURL.startsWith("https://")) {
     res.redirect(longURL);
   } else {
@@ -164,7 +162,6 @@ app.post("/register", (req, res) => {
     email: email,
     hashedPassword: hashedPassword
   };
-  console.log(users);
   req.session.userId = randomId;
   res.redirect("/urls");
 });
@@ -235,10 +232,8 @@ app.post("/urls", (req, res) => {
     };
     return res.status(401).render("error", templateVars);
   }
-  console.log(req.body); // Log the POST request body to the console
   const shortUrl = generateRandomString(6);
   urlDatabase[shortUrl] = {"longURL": req.body.longURL, userID: req.session.userId };
-  console.log(urlDatabase);
   res.redirect(`/urls/${shortUrl}`);
 });
 
@@ -258,5 +253,5 @@ app.get("*", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  console.log(`TinyApp listening on port ${PORT}!`);
 });
