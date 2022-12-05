@@ -25,13 +25,16 @@
         border-radius: 4px;
         cursor: pointer;
       }
-      
       .edit {
         width: 50px;
         border: 1px solid rgb(15, 125, 205);
         color: rgb(15, 125, 205);
       }
-     
+      .createNew {
+        width: 210px;
+        border: 1px solid rgb(15, 125, 205);
+        color: rgb(15, 125, 205);
+      }
     </style>
   </head>
   <body>
@@ -39,7 +42,7 @@
     <main style="margin: 1em;">
       <h3>My URLs</h3>
       <table class="table">
-        <thead>
+        <thead id="thead">
           <tr>
             <th scope="col">Short URL ID</th>
             <th scope="col">Long URL</th>
@@ -50,7 +53,7 @@
         <tbody>
           <% for (let id in urls) { %>
             <tr>
-              <td name="shortURL"><%= id %></td>
+              <td name="shortURL"><a href="/u/<%= id %>"><%= id %></a></td>
               <td><%= urls[id].longURL %></td>
               <td><a href="/urls/<%=id%>"><button type="button" class="edit">Edit</button></a></td>
               <form method="POST" action="/urls/<%= id %>?_method=DELETE">
@@ -59,7 +62,7 @@
               </tr>
           <% } %>
           <tr>
-            <td><a href="urls/new">Create a New Short Link</a></td>
+            <td><a href="urls/new"><button type="button" class="createNew">Create a New Short URL</button></a></td>
           </tr>
         </tbody>
       </table>
