@@ -5,7 +5,10 @@ TinyApp is a full stack web application built with Node and Express that allows 
 ## Final Product
 
 !["The login page. Say hi to our welcome kitten!"](https://github.com/Likai-L/tinyapp/blob/main/docs/login-page.png?raw=true)
-!["screenshot description"](#)
+!["The main index page containing all the URLs that you created."](https://github.com/Likai-L/tinyapp/blob/main/docs/urls-page.png?raw=true)
+!["The page for creating new URLs."](https://github.com/Likai-L/tinyapp/blob/main/docs/create-page.png?raw=true)
+!["The page for editting existing URLs."](https://github.com/Likai-L/tinyapp/blob/main/docs/edit-page.png?raw=true)
+!["One of the error pages. Our error kitten is confused!"](https://github.com/Likai-L/tinyapp/blob/main/docs/error-page.png?raw=true)
 
 ## Dependencies
 
