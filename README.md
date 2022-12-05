@@ -4,26 +4,27 @@ The page for editting existing URLs.# TinyApp Project
 TinyApp is a full stack web application built with Node and Express that allows users to shorten long URLs (à la bit.ly).
 
 ## Final Product
+<br>
 
+!["The login page. Say hi to our welcome kitten!"](https://github.com/Likai-L/tinyapp/blob/main/docs/login-page.png?raw=true)
+<center>The login page. Say hi to our welcome kitten!</center>
+<br>
 
-<figure>
-<img src="https://github.com/Likai-L/tinyapp/blob/main/docs/login-page.png?raw=true" alt="login page">
-<figcaption align = "center"><b>The login page. Say hi to our welcome kitten!</b></figcaption>
-</figure>
-
-
-
-
-
-The login page. Say hi to our welcome kitten!
 !["The main index page containing all the URLs that you created."](https://github.com/Likai-L/tinyapp/blob/main/docs/urls-page.png?raw=true)
-The main index page containing all the URLs that you created.
+<center>The main index page containing all the URLs that you created.</center>
+<br>
+
 !["The page for creating new URLs."](https://github.com/Likai-L/tinyapp/blob/main/docs/create-page.png?raw=true)
-The page for creating new URLs.
+<center>The page for creating new URLs.</center>
+<br>
+
 !["The page for editting existing URLs."](https://github.com/Likai-L/tinyapp/blob/main/docs/edit-page.png?raw=true)
-The page for editting existing URLs.
+<center>The page for editting existing URLs.</center>
+<br>
+
 !["One of the error pages. Our error kitten is confused!"](https://github.com/Likai-L/tinyapp/blob/main/docs/404-page.png?raw=true)
-One of the error pages. Our error kitten is confused!
+<center>One of the error pages. Our error kitten is confused!</center>
+<br>
 
 ## Dependencies
 
