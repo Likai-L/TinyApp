@@ -6,7 +6,7 @@
 
     .login-status {
       position: absolute;
-      right: 15px;
+      right: 10px;
     }
 
     button {
@@ -43,6 +43,11 @@
       border: 1px solid black;
       font-weight: 350;
     }
+    .login-status span {
+      color: black;
+      font-weight: 210;
+      font-size: 90%;
+    }
     #Tiny-btn {
       width: 100px;
       font-size: 90%;
@@ -54,13 +59,13 @@
     #Create-btn {
       width: 150px;
     }
-    #login-btn {
+    #login-btn, #logout-btn {
       width: 80px;
-      font-size: 90%;
+      font-size: 85%;
     }
     #register-btn {
       width: 90px;
-      font-size: 90%;
+      font-size: 85%;
     }
     
   </style>
@@ -82,16 +87,16 @@
         <a class="nav-item nav-link" href="/urls"><button class="nav-btn" id="My-btn">My URLs</button></a>
         <a class="nav-item nav-link" href="/urls/new"><button class="nav-btn" id="Create-btn">Create New URL</button></a>
         <% if (user) { %>
-          <form action="/logout" method="POST" class="login-status">
-            <span>Logged in as: <%= user.email %>!</span>
-            <button type="submit" class="nav-btn">Logout</button>
+          <form action="/logout" method="POST" class="login-status navbar-brand">
+            <span>Logged in as: <%= user.email %></span>
+            <button type="submit" class="nav-btn" id="logout-btn">Logout</button>
           </form>
         <% } else { %>
-          <span class="login-status">
-            <a href="/login" class="navbar-brand">
+          <span class="login-status navbar-brand">
+            <a href="/login" >
               <button type="button" class="nav-btn" id="login-btn">Login</button>
             </a>
-            <a href="/register" class="navbar-brand">
+            <a href="/register">
               <button type="button" class="nav-btn" id="register-btn">Register</button>
             </a>
           </span>
