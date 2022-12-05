@@ -34,17 +34,38 @@
     
     .nav-btn {
       background-color: transparent;
-      border: none;
+      border: 1px solid black;
+      border-radius: 10px;
       color: black;
       font-weight: 250;
     }
     .nav-btn:hover {
-      border: none;
+      border: 1px solid black;
       font-weight: 350;
     }
+    #Tiny-btn {
+      width: 100px;
+      font-size: 90%;
+    }
+    #My-btn {
+      width: 110px;
+      font-size: 105%;
+    }
+    #Create-btn {
+      width: 150px;
+    }
+    #login-btn {
+      width: 80px;
+      font-size: 90%;
+    }
+    #register-btn {
+      width: 90px;
+      font-size: 90%;
+    }
+    
   </style>
   <nav class="navbar navbar-expand-md navbar-dark bg-success">
-    <a class="navbar-brand" href="/urls"><button class="nav-btn">TinyApp</button></a>
+    <a class="navbar-brand" href="/urls"><button class="nav-btn" id="Tiny-btn">TinyApp</button></a>
     <button
       class="navbar-toggler"
       type="button"
@@ -58,12 +79,12 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
       <div class="navbar-nav">
-        <a class="nav-item nav-link" href="/urls"><button class="nav-btn">My URLs</button></a>
-        <a class="nav-item nav-link" href="/urls/new"><button class="nav-btn">Create New URL</button></a>
+        <a class="nav-item nav-link" href="/urls"><button class="nav-btn" id="My-btn">My URLs</button></a>
+        <a class="nav-item nav-link" href="/urls/new"><button class="nav-btn" id="Create-btn">Create New URL</button></a>
         <% if (user) { %>
           <form action="/logout" method="POST" class="login-status">
             <span>Logged in as: <%= user.email %>!</span>
-            <button type="submit" class="login-status-btn">Logout</button>
+            <button type="submit" class="nav-btn">Logout</button>
           </form>
         <% } else { %>
           <span class="login-status">
