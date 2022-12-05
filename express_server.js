@@ -4,6 +4,7 @@ const PORT = 8080; // default port 8080
 const morgan = require('morgan');
 const cookieSession = require("cookie-session");
 const bcrypt = require("bcryptjs");
+const methodOverride = require("method-override");
 const { generateRandomString, getUserByEmail, urlsForUser } = require("./helpers");
 
 app.set("view engine", "ejs");
@@ -25,6 +26,7 @@ const users = {}; // known bug: if the server restarts without the user logging 
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
+app.use(methodOverride('_method'));
 app.use(cookieSession({
   name: "session",
   keys: ["spookyKey"]
@@ -40,7 +42,7 @@ app.get("/urls/new", (req, res) => {
   res.render("urls_new", templateVars);
 });
 
-app.post("/urls/:id/delete", (req, res) => {
+app.delete("/urls/:id", (req, res) => {
   if (!urlDatabase[req.params.id]) {
     const templateVars = {
       user: users[req.session.userId],
@@ -84,7 +86,7 @@ app.post("/urls", (req, res) => {
 
 });
 
-app.post("/urls/:id", (req, res) => {
+app.put("/urls/:id", (req, res) => {
   if (!urlDatabase[req.params.id]) {
     const templateVars = {
       user: users[req.session.userId],
@@ -212,10 +214,6 @@ app.post("/login", (req, res) => {
 app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/login");
-});
-
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
 });
 
 app.get("/urls", (req, res) => {
